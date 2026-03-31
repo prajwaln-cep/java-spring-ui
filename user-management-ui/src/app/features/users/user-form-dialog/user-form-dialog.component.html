@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>
+  <mat-icon>{{ isEditMode ? 'edit' : 'person_add' }}</mat-icon>
+  {{ isEditMode ? 'Edit User' : 'Create New User' }}
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="form" novalidate class="dialog-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Name</mat-label>
+      <input matInput formControlName="name" placeholder="John Doe">
+      <mat-icon matPrefix>badge</mat-icon>
+      @if (form.get('name')?.hasError('required')) { <mat-error>Name is required</mat-error> }
+      @if (form.get('name')?.hasError('minlength')) { <mat-error>Name must be at least 2 characters</mat-error> }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Email Address</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="user@example.com">
+      <mat-icon matPrefix>email</mat-icon>
+      @if (form.get('email')?.hasError('required')) { <mat-error>Email is required</mat-error> }
+      @if (form.get('email')?.hasError('email')) { <mat-error>Enter a valid email</mat-error> }
+    </mat-form-field>
+
+    @if (!isEditMode) {
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput [type]="hidePassword ? 'password' : 'text'" formControlName="password">
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.get('password')?.hasError('required')) { <mat-error>Password is required</mat-error> }
+        @if (form.get('password')?.hasError('pattern')) {
+          <mat-error>Must include uppercase, lowercase, number and special character</mat-error>
+        }
+      </mat-form-field>
+    }
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Role</mat-label>
+      <mat-select formControlName="role">
+        @for (role of roles; track role) {
+          <mat-option [value]="role">{{ role }}</mat-option>
+        }
+      </mat-select>
+      <mat-icon matPrefix>admin_panel_settings</mat-icon>
+    </mat-form-field>
+
+    @if (isEditMode) {
+    <div class="toggle-row">
+      <mat-slide-toggle formControlName="enabled" color="primary">
+        Account Active
+      </mat-slide-toggle>
+    </div>
+    }
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading">Cancel</button>
+  <button mat-raised-button color="primary" type="button" (click)="onSubmit()" [disabled]="isLoading">
+    @if (isLoading) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      <span>{{ isEditMode ? 'Save Changes' : 'Create User' }}</span>
+    }
+  </button>
+</mat-dialog-actions>
+

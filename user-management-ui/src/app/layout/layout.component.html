@@ -1,0 +1,74 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav mode="side" opened class="sidenav" fixedInViewport>
+    <div class="sidenav-header">
+      <mat-icon class="brand-icon">manage_accounts</mat-icon>
+      <span class="brand-title">UserMgmt</span>
+    </div>
+
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+
+      @if (authService.isAdmin()) {
+      <a mat-list-item routerLink="/users" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>people</mat-icon>
+        <span matListItemTitle>Users</span>
+      </a>
+      }
+
+      <a mat-list-item routerLink="/profile" routerLinkActive="active-link">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle>My Profile</span>
+      </a>
+    </mat-nav-list>
+
+    <div class="sidenav-footer">
+      <mat-divider></mat-divider>
+      <button mat-list-item (click)="logout()" class="logout-btn">
+        <mat-icon>logout</mat-icon>
+        <span>Logout</span>
+      </button>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <mat-toolbar color="primary" class="toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-spacer"></span>
+
+      <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-btn">
+        @if (currentUser) {
+          <div class="avatar">{{ getInitials(currentUser.name) }}</div>
+          <span class="user-name">{{ currentUser.name }}</span>
+        }
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        @if (currentUser) {
+          <div class="user-menu-header">
+            <strong>{{ currentUser.name }}</strong>
+            <small>{{ currentUser.email }}</small>
+            <span class="role-badge">{{ currentUser.role }}</span>
+          </div>
+        }
+        <mat-divider></mat-divider>
+        <button mat-menu-item routerLink="/profile">
+          <mat-icon>person</mat-icon> My Profile
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon> Logout
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

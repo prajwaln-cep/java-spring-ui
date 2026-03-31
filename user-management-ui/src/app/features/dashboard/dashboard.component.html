@@ -1,0 +1,88 @@
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-subtitle">Welcome back, {{ currentUser?.name || 'User' }}!</p>
+    </div>
+    @if (isAdmin) {
+      <a mat-raised-button color="primary" routerLink="/users">
+        <mat-icon>people</mat-icon>
+        Manage Users
+      </a>
+    }
+  </div>
+
+  @if (isLoading) {
+    <div class="loading-container">
+      <mat-spinner diameter="48"></mat-spinner>
+      <p>Loading dashboard...</p>
+    </div>
+  } @else {
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      @for (stat of stats; track stat.label) {
+        <mat-card class="stat-card">
+          <div class="stat-icon" [style.background]="stat.bg">
+            <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">{{ stat.label }}</span>
+            <span class="stat-value">{{ stat.value }}</span>
+          </div>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Recent Users table (admin only) -->
+    @if (isAdmin && recentUsers.length > 0) {
+      <mat-card class="recent-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>history</mat-icon>
+            Recent Users
+          </mat-card-title>
+          <span class="spacer"></span>
+          <a mat-button color="primary" routerLink="/users">View All</a>
+        </mat-card-header>
+        <mat-card-content>
+          @for (user of recentUsers; track user.id) {
+            <div class="user-row">
+              <div class="user-avatar">{{ user.name.charAt(0).toUpperCase() }}</div>
+              <div class="user-info">
+                <span class="user-name">{{ user.name }}</span>
+                <span class="user-email">{{ user.email }}</span>
+              </div>
+              <div class="user-badges">
+                <span class="badge role-badge" [class.admin]="user.role === 'ADMIN'">{{ user.role }}</span>
+                <span class="badge status-badge" [class.active]="user.enabled">
+                  {{ user.enabled ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <!-- Profile card (regular user) -->
+    @if (!isAdmin && currentUser) {
+      <mat-card class="profile-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>person</mat-icon>
+            My Profile
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="profile-field"><strong>Name:</strong> {{ currentUser.name }}</div>
+          <div class="profile-field"><strong>Email:</strong> {{ currentUser.email }}</div>
+          <div class="profile-field"><strong>Role:</strong> {{ currentUser.role }}</div>
+        </mat-card-content>
+        <mat-card-actions>
+          <a mat-button color="primary" routerLink="/profile">Edit Profile</a>
+        </mat-card-actions>
+      </mat-card>
+    }
+  }
+</div>
+
